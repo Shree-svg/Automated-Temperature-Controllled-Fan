@@ -1,0 +1,28 @@
+#include <DHT.h>
+#define DHTPIN 2
+#define DHTTYPE DHT11
+DHT dht(DHTPIN, DHTTYPE);
+const int fanPin = 3;
+int thresholdTemp = 30;
+void setup() {
+Serial.begin(9600);
+19
+dht.begin();
+pinMode(fanPin, OUTPUT);
+}
+void loop() {
+float temperature = dht.readTemperature();
+if (isnan(temperature)) {
+Serial.println("Failed to read from DHT sensor!");
+return;
+}
+if (temperature < thresholdTemp) {
+analogWrite(fanPin, 0);
+} else {
+int fanSpeed = map(temperature, thresholdTemp, 40, 100,
+255);
+fanSpeed = constrain(fanSpeed, 100, 255);
+analogWrite(fanPin, fanSpeed);
+}
+delay(1000);
+}
